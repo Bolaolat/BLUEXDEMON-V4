@@ -39,7 +39,19 @@ const {getRandom, getBuffer,sleep} = require("./lib/myfunc");
 if(runWith.includes("eplit")){
 }
 const connect = require("./server.js")
-const PORT = process.env.PORT || 3000 
+const express = require('express');
+const app = express();
+
+// Basic route for uptime monitorin
+const express = require('express');
+const app = express();
+
+// Basic route for uptime monitoring
+app.get('/', (req, res) => res.send('Bot is running!'));
+
+// Start the server
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.log(`Uptime server is running on port ${PORT}`));.PORT || 3000 
 let d = new Date
 let locale = 'id'
 let gmt = new Date(0).getTime() - new Date('1 Januari 2021').getTime()
