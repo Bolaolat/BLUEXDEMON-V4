@@ -2,9 +2,9 @@ const version = require("@whiskeysockets/baileys/package.json").version
 
 
 
-global.pairingNumber = "2347057344983"
+global.pairingNumber = "2347042732041"
  
-global.botNumber = ["2347057344983"]
+global.botNumber = ["2347042732041"]
 
 global.sign = "✘"
 // ☞ ➻ ➽ ☛ ✔
