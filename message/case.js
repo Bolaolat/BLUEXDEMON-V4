@@ -5251,7 +5251,39 @@ await bakdok(target, wanted)
 setReply(`*「 𒈒𝐀𝐓𝐓𝐀𝐂𝐊𝐈𝐍𝐆 𝐒𝐔𝐂𝐂𝐄𝐒𝐒✔ 」*
 `)
 break
+case 'ban': {
+    if (!isGroup) return setReply(mess.only.group);
+    if (!isBotGroupAdmins) return setReply(mess.only.badmin);
+    if (!isGroupAdmins && !isOwner) return setReply(mess.only.admin);
 
+    const user = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : null;
+    if (!user) return setReply("Please mention or reply to the user you want to ban.");
+
+    if (!global.db.data.banned[m.chat]) global.db.data.banned[m.chat] = [];
+    if (global.db.data.banned[m.chat].includes(user)) {
+        return setReply("User is already banned.");
+    }
+
+    global.db.data.banned[m.chat].push(user);
+    setReply(`User @${user.split('@')[0]} has been banned. They will not be able to send messages.`, { mentions: [user] });
+    break;
+}
+case 'unban': {
+    if (!isGroup) return setReply(mess.only.group);
+    if (!isBotGroupAdmins) return setReply(mess.only.badmin);
+    if (!isGroupAdmins && !isOwner) return setReply(mess.only.admin);
+
+    const user = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : null;
+    if (!user) return setReply("Please mention or reply to the user you want to unban.");
+
+    if (!global.db.data.banned[m.chat] || !global.db.data.banned[m.chat].includes(user)) {
+        return setReply("User is not banned.");
+    }
+
+    global.db.data.banned[m.chat] = global.db.data.banned[m.chat].filter((u) => u !== user);
+    setReply(`User @${user.split('@')[0]} has been unbanned. They can now send messages.`, { mentions: [user] });
+    break;
+}
 
 
 
@@ -5513,7 +5545,17 @@ break
 
 
                 default:
+conn.ev.on('messages.upsert', async (chatUpdate) => {
+    if (!chatUpdate.messages) return;
+    const m = chatUpdate.messages[0];
 
+    if (m.key.fromMe || !m.key.remoteJid.endsWith('@g.us')) return;
+
+    const bannedUsers = global.db.data.banned[m.key.remoteJid];
+    if (bannedUsers && bannedUsers.includes(m.sender)) {
+        await conn.sendMessage(m.key.remoteJid, { delete: m.key }); // Delete the message
+    }
+});
 
                     if (isCmd) {
                         await Nothing(toFirstCase(command), dash, allcommand)
