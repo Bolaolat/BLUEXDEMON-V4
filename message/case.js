@@ -4238,9 +4238,14 @@ case 'update': {
             name: 'help.js'
         },
         {
-            url: 'https://raw.githubusercontent.com/BLUEXDEMONl/BLUEXDEMON-V4/refs/heads/master/settings.js',
-            path: './settings.js',
-            name: 'settings.js'
+            url: 'https://raw.githubusercontent.com/BLUEXDEMONl/BLUEXDEMON-V4/refs/heads/master/message/message.js',
+            path: './message/message.js',
+            name: 'message.js'
+        },
+               {
+            url: 'https://raw.githubusercontent.com/BLUEXDEMONl/BLUEXDEMON-V4/refs/heads/master/temp/audio/autovn.js',
+            path: './temp/audio/autovn.js',
+            name: 'autovn.js'
         }
     ];
 
@@ -4258,7 +4263,7 @@ case 'update': {
             fs.writeFileSync(file.path, newContent, 'utf8');
             reply(`*${file.name}* successfully updated.`);
         }
-
+  await sleep(700)
         reply('𝐔𝐏𝐃𝐀𝐓𝐄 𝐏𝐑𝐎𝐂𝐄𝐒𝐒 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐄.');
     } catch (error) {
         console.error("Error during update:", error);
