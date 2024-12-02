@@ -6,6 +6,8 @@ global.pairingNumber = "2349019529423"
  
 global.botNumber = ["2349019529423"]
 
+global.anticall = true
+
 global.sign = "➜"
 // ☞ ➻ ➽ ☛ ✔
 

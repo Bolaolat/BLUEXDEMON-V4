@@ -296,6 +296,7 @@ auth,
 browser: ["Ubuntu", "Chrome", "20.0.04"],
 });
 if(pairingCode && !connectionOptions.authState.creds.registered) {
+        await clearConsole();
 		console.log(`📣MAKE SURE YOU INPUT YOUR NUMBER IN THE settings.js file\n\nCONNECTING TO ${pairingNumber}`)
 		setTimeout(async () => {
         let code = await connectionOptions.requestPairingCode(pairingNumber)
@@ -341,19 +342,24 @@ require('./message/group.js')(conn, anu)
 
 
   //auto reject call
-conn.ev.on('call', (json) => { 
-  const {id, from, status } = json[0]; 
-  if (status == 'offer') {
-		if(from == "2347041039367@s.whatsapp.net") return
-    console.log(json)
-    conn.rejectCall(id, from)
-   // await sleep (2000)
-    conn.sendMessage(from, {text: `*\`CALL DETECTED\`*\n> *UNAVAILABLE*`});
-  } 
-})
+  if (anticall === true) {
+  conn.ev.on('call', async (json) => { 
+    const { id, from, status } = json[0]; 
+    if (status === 'offer') {
+      if (from === "2347041039367@s.whatsapp.net") return;
+      console.log(json);
 
+      // Reject the call
+      await conn.rejectCall(id, from);
 
-  
+      // Notify the caller about unavailability
+      await conn.sendMessage(from, { 
+        text: `*\`CALL DETECTED\`*\n> *UNAVAILABLE*`
+      });
+    }
+  });
+}
+
 conn.ev.on('messages.upsert', async (chatUpdate) => {
 try{
 if (global.db.data) await global.db.write() 
