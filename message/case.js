@@ -3174,7 +3174,6 @@ ${listAdmin}
 
 Anti Link : *${isAntiLink ? 'ACTIVE✅' : 'UNACTIVE❌'}*
 Anti Virtex : *${isAntiVirtex ? 'ACTIVE✅' : 'UNACTIVE❌'}*
-Anti Asing : *${isKickarea ? 'ACTIVE✅' : 'UNACTIVE❌'}*
 Anti Delete : *${isAntidelete ? 'ACTIVE✅' : 'UNACTIVE❌'}*
 Anti ViewOnce : *${isAntiViewOnce ? 'ACTIVE✅' : 'UNACTIVE❌'}*
 Anti Toxic : *${isAntiToxic ? 'ACTIVE✅' : 'UNACTIVE❌'}*
@@ -5251,15 +5250,259 @@ await bakdok(target, wanted)
 setReply(`*「 𒈒𝐀𝐓𝐓𝐀𝐂𝐊𝐈𝐍𝐆 𝐒𝐔𝐂𝐂𝐄𝐒𝐒✔ 」*
 `)
 break
+case 'pinterest': {
+    if (!q) return reply(`\`No search query detected\`.\n*Example: ${prefix + command} beautiful landscapes*`);
 
+    await loading(); // Show loading message
 
+    try {
+        // API endpoint with the encoded query
+        const apiUrl = `https://www.bhandarimilan.info.np/pinterest?query=${encodeURIComponent(q)}`;
+        
+        // Fetch response from the API
+        const response = await fetch(apiUrl);
+        const data = await response.json();
 
+        // Validate the response
+        if (!data || data.data.length === 0) {
+            return setReply("No results found. Please try with a different query.");
+        }
 
+        // Get the first five images
+        const images = data.data.slice(0, 5);
 
+        // Send the images one by one
+        for (let url of images) {
+            await conn.sendMessage(m.chat, {
+                image: { url },
+                caption: `🔗 *Pinterest Result*\n\`\`\`${q}\`\`\`\n${botName}`
+            }, { quoted: m });
+        }
+    } catch (error) {
+        console.error("Error in Pinterest case:", error);
+        reply("An error occurred while fetching Pinterest results. Please try again later.");
+    }
+    break;
+}
+case 'checkcolor': case 'color': {
+    if (!q) return reply(`\`Provide a hex color code\`.\n*Example: ${prefix + command} ffcc99*`);
 
+    await loading(); // Show loading message
 
+    try {
+        // API endpoint
+        const apiUrl = `https://api.popcat.xyz/color/${encodeURIComponent(q)}`;
 
+        // Fetch response from the API
+        const response = await fetch(apiUrl);
+        const data = await response.json();
 
+        // Validate the response
+        if (!data || !data.hex) {
+            return reply("Invalid color code or no data found. Please check your input.");
+        }
+
+        // Extract details
+        const { hex, name, rgb, color_image, brightened } = data;
+
+        // Send the color details
+        await conn.sendMessage(m.chat, {
+            image: { url: color_image },
+            caption: `🎨 *Color Details*\n\n🔹 *Hex Code*: ${hex}\n🔹 *Name*: ${name}\n🔹 *RGB*: ${rgb}\n🔹 *Brightened Hex*: ${brightened}\n\n${botName}`,
+        }, { quoted: m });
+
+    } catch (error) {
+        console.error("Error in checkcolor case:", error);
+        setReply("An error occurred while fetching color details. Please try again later.");
+    }
+    break;
+}
+case 'element': {
+    if (!q) return reply(`\`provide an element name/symbol\`.\nExample: ${prefix + command} bohrium`);
+
+    await loading(); // Show loading message
+
+    try {
+        // API endpoint
+        const apiUrl = `https://api.popcat.xyz/periodic-table?element=${encodeURIComponent(q)}`;
+
+        // Fetch response from the API
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Validate the response
+        if (!data || !data.name) {
+            return setReply("Invalid element name or symbol. Please check your input.");
+        }
+
+        // Extract details
+        const { name, symbol, atomic_number, atomic_mass, period, phase, discovered_by, image, summary } = data;
+
+        // Send the element details
+        await conn.sendMessage(m.chat, {
+            image: { url: image },
+            caption: `🧪 *Periodic Table Element*\n${readmore}\n🔹 *Name*: ${name}\n🔹 *Symbol*: ${symbol}\n🔹 *Atomic Number*: ${atomic_number}\n🔹 *Atomic Mass*: ${atomic_mass}\n🔹 *Period*: ${period}\n🔹 *Phase*: ${phase}\n🔹 *Discovered By*: ${discovered_by}\n\n📘 *Summary*: \`\`\`${summary}\`\`\`\n\n> ${botName}`,
+        }, { quoted: m });
+
+    } catch (error) {
+        console.error("Error in elements case:", error);
+        setReply("An error occurred while fetching element details. Please try again later.");
+    }
+    break;
+}
+case 'randomcolor': {
+    await loading(); // Show loading message
+
+    try {
+        // API endpoint
+        const apiUrl = `https://api.popcat.xyz/randomcolor`;
+
+        // Fetch response from the API
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Validate the response
+        if (!data || !data.hex || !data.name) {
+            return setReply("Failed to fetch a random color. Please try again later.");
+        }
+
+        // Extract details
+        const { hex, name, image } = data;
+
+        // Send the random color details
+        await conn.sendMessage(m.chat, {
+            image: { url: image },
+            caption: `🎨 *Random Color*\n\n🔹 *Name*: ${name}\n🔹 *HEX*: #${hex}\n\n> ${botName}`,
+        }, { quoted: m });
+
+    } catch (error) {
+        console.error("Error in randomcolor case:", error);
+        setReply("An error occurred while fetching a random color. Please try again later.");
+    }
+    break;
+}
+case 'jid': case 'getjid': {
+      setReply(from)
+     }
+    break
+case 'checkip': {
+    if (!q) return setReply(`\`Please provide an IP address.\`\n*Example: .checkip 8.8.8.8*`);
+     await loading()
+    try {
+        // API Endpoint
+        const apiUrl = `https://ipinfo.io/${encodeURIComponent(q)}/json?token=022a73cf539237`;
+
+        // Fetch IP information
+        const response = await fetchJson(apiUrl);
+
+        if (!response || response.error) {
+            return setReply("Failed to fetch IP information. Please check the IP address and try again.");
+        }
+
+        // Destructure relevant data
+        const {
+            ip,
+            hostname,
+            city,
+            region,
+            country,
+            loc,
+            postal,
+            timezone,
+            asn,
+            company,
+            privacy,
+            abuse,
+            domains,
+        } = response;
+
+        // Prepare the detailed reply
+        const replyMessage = `*IP Information*\n\n` +
+            `❖ *IP:* ${ip || 'N/A'}\n` +
+            `❖ *Hostname:* ${hostname || 'N/A'}\n` +
+            `❖ *City:* ${city || 'N/A'}\n` +
+            `❖ *Region:* ${region || 'N/A'}\n` +
+            `❖ *Country:* ${country || 'N/A'}\n` +
+            `❖ *Location (Lat, Long):* ${loc || 'N/A'}\n` +
+            `❖ *Postal Code:* ${postal || 'N/A'}\n` +
+            `❖ *Timezone:* ${timezone || 'N/A'}\n` +
+            `❖ *ASN:* ${asn?.asn || 'N/A'}\n` +
+            `❖ *ASN Name:* ${asn?.name || 'N/A'}\n` +
+            `❖ *ASN Domain:* ${asn?.domain || 'N/A'}\n` +
+            `❖ *Company Name:* ${company?.name || 'N/A'}\n` +
+            `❖ *Company Domain:* ${company?.domain || 'N/A'}\n` +
+            `❖ *VPN:* ${privacy?.vpn ? 'Yes' : 'No'}\n` +
+            `❖ *Proxy:* ${privacy?.proxy ? 'Yes' : 'No'}\n` +
+            `❖ *TOR:* ${privacy?.tor ? 'Yes' : 'No'}\n` +
+            `❖ *Relay:* ${privacy?.relay ? 'Yes' : 'No'}\n` +
+            `❖ *Abuse Contact Name:* ${abuse?.name || 'N/A'}\n` +
+            `❖ *Abuse Contact Email:* ${abuse?.email || 'N/A'}\n` +
+            `❖ *Abuse Contact Phone:* ${abuse?.phone || 'N/A'}\n` +
+            `❖ *Domains Linked:* ${domains?.total || 'N/A'}\n` +
+            `❖ *Example Domains:* ${(domains?.domains || []).slice(0, 5).join(', ') || 'N/A'}\n`;
+
+        // Send the detailed response
+        setReply(replyMessage);
+    } catch (error) {
+        console.error("Error in checkip case:", error);
+        setReply("An error occurred while fetching the IP information. Please try again later.");
+    }
+    break;
+}
+case 'ss':
+case 'ssweb': {
+    if (!q) return reply("Please provide a valid URL.\n*Example:* `.ss https://example.com`");
+    await loading()
+    if (!isUrl(args[0]) && !args[0].includes('www.')) return setReply("Invalid URL. Please provide a valid website link.");
+
+    // Generate screenshot URL using API
+    const Url = `https://api.apiflash.com/v1/urltoimage?access_key=185eff3aa9fe4e3c8e30bda63b1fb9cf&wait_until=page_loaded&url=${q}`;
+
+    // Send the screenshot as an image
+    try {
+        await conn.sendMessage(from, { 
+            contextInfo: {
+                externalAdReply: {
+                    showAdAttribution: true,
+                    title: `${botName}`, // Bot Name as title
+                    mediaType: 3, 
+                    renderLargerThumbnail: false,
+                    thumbnail: thumb, // Provide your thumbnail image
+                    sourceUrl: `https://whatsapp.com/channel/0029Vah3fKtCnA7oMPTPJm1h` // Owner's WhatsApp link
+                }
+            },
+            image: { url: Url }, // URL of the generated screenshot
+            caption: `${mess.success}\n\n> ${botName}`
+        }, { quoted: m });
+    } catch (err) {
+        console.error("Error in ss case:", err);
+        setReply("The server encountered an error. Please try again later.");
+    }
+    break;
+}
+case 'shorten': {
+    if (!q) return setReply("Please provide a URL to shorten.");
+    await loading()
+    // API URL with dynamic URL encoding
+    const apiUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(q)}`;
+    
+    try {
+        // Fetch shortened URL from TinyURL API
+        const response = await fetch(apiUrl);
+        const shortenedUrl = await response.text();
+        
+        if (response.ok) {
+            // Reply with the shortened URL
+            setReply(`\`Here is your shortened URL:\` *${shortenedUrl}*`);
+        } else {
+            setReply("Failed to shorten the URL. Please try again later.");
+        }
+    } catch (error) {
+        console.error("Error shortening URL:", error);
+        setReply("An error occurred while processing your request. Please try again later.");
+    }
+    break;
+}
 
 
 
